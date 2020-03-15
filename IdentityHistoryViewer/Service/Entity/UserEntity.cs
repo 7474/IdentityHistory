@@ -1,5 +1,5 @@
 ﻿using IdentityHistoryFunctionApp.SlackAPI;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System;
 using System.Collections.Generic;
 
@@ -17,8 +17,7 @@ namespace IdentityHistoryFunctionApp.Entity
         /// <summary>
         /// パーティション内でのID。
         /// </summary>
-        [JsonProperty(propertyName: "id")]
-        public string Id { get; set; }
+        public string id { get; set; }
 
         /// <remarks>
         /// 関心事ではないので履歴は持たない。
@@ -40,8 +39,6 @@ namespace IdentityHistoryFunctionApp.Entity
 
     public class UserInfo : User
     {
-        public string Id { get { return id; } }
-        public string TeamId { get { return team_id; } }
     }
 
     public class UserProfileInfo : UserProfile
@@ -54,5 +51,4 @@ namespace IdentityHistoryFunctionApp.Entity
             return image_512 != profile.image_512;
         }
     }
-
 }

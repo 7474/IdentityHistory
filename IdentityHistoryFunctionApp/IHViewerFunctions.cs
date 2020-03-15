@@ -20,7 +20,7 @@ namespace IdentityHistoryFunctionApp
     {
 
         [FunctionName("ListTeams")]
-        public static async Task<IActionResult> ListTeams(
+        public static async Task<ActionResult<IList<ListTeam>>> ListTeams(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "teams")] HttpRequest req,
             [CosmosDB(
                 databaseName: "IdentityHistory",
@@ -52,7 +52,7 @@ namespace IdentityHistoryFunctionApp
         }
 
         [FunctionName("ListUsers")]
-        public static async Task<IActionResult> ListUsers(
+        public static async Task<ActionResult<IList<ListUser>>> ListUsers(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "teams/{teamId}/users")] HttpRequest req,
             string teamId,
              [CosmosDB(
@@ -90,7 +90,7 @@ namespace IdentityHistoryFunctionApp
         }
 
         [FunctionName("GetUser")]
-        public static async Task<IActionResult> GetUser(
+        public static async Task<ActionResult<SlackUserEntity>> GetUser(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "teams/{teamId}/users/{userId}")] HttpRequest req,
             [CosmosDB(
                 databaseName: "IdentityHistory",

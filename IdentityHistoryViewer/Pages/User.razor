@@ -1,0 +1,49 @@
+﻿@page "/teams/{teamId}/users/{userId}"
+@inject IHAPI IHAPI
+@using IdentityHistoryFunctionApp.Entity
+@using System.Text.Json
+
+<h1>User</h1>
+
+@if (user == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div>
+        <dl>
+            <dt>ID</dt>
+            <dd>@user.id</dd>
+            <dt>Name</dt>
+            <dd>@user.CurrentUser.real_name</dd>
+        </dl>
+    </div>
+    <div>
+        <ul>
+            @foreach (var profile in user.RecentProfile)
+            {
+                <li>
+                    <img src="@profile.image_192" />
+                    <span>@profile.Timestamp</span>
+                </li>
+            }
+        </ul>
+    </div>
+    <div>
+        <pre>@(JsonSerializer.Serialize(user))</pre>
+    </div>
+}
+@code {
+    [Parameter]
+    public string TeamId { get; set; }
+    [Parameter]
+    public string UserId { get; set; }
+
+    private SlackUserEntity user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await IHAPI.GetUser(TeamId, UserId);
+    }
+}

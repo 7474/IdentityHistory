@@ -1,0 +1,42 @@
+﻿@page "/teams/{teamId}/users"
+@inject IHAPI IHAPI
+
+<h1>Users</h1>
+
+@if (users == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>
+                        <NavLink class="nav-link" href="@($"/teams/{TeamId}/users/{user.id}")">
+                            @user.id
+                        </NavLink>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    [Parameter]
+    public string TeamId { get; set; }
+
+    private IList<ListUser> users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await IHAPI.ListUser(TeamId);
+    }
+}
