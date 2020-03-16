@@ -10,13 +10,18 @@ namespace IdentityHistoryViewer
 {
     public class Program
     {
+#if DEBUG
+        const string API_BASE_URI = "http://localhost:7071/";
+#else
+        const string API_BASE_URI = "https://identityhistoryfunctionapp.azurewebsites.net/";
+#endif
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
             builder.Services.AddSingleton(new IHAPIConfig()
             {
-                BaseUri = "http://localhost:7071/",
+                BaseUri = API_BASE_URI,
             });
             builder.Services.AddTransient<IHAPI>();
 
