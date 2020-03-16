@@ -12,6 +12,7 @@ namespace IdentityHistoryViewer.Service
     {
         public string BaseUri { get; set; }
     }
+
     public class IHAPI
     {
         private IHAPIConfig config;
@@ -21,6 +22,14 @@ namespace IdentityHistoryViewer.Service
         {
             this.httpClient = http;
             this.config = config;
+        }
+
+        public async Task<IList<ListTeam>> ListTeams()
+        {
+            var res = await httpClient.GetJsonAsync<IList<ListTeam>>(
+                $"{config.BaseUri}api/teams"
+                );
+            return res;
         }
 
         public async Task<IList<ListUser>> ListUser(string teamId)
@@ -38,7 +47,11 @@ namespace IdentityHistoryViewer.Service
                 );
             return res;
         }
+    }
 
+    public class ListTeam
+    {
+        public string TeamId { get; set; }
     }
 
     public class ListUser

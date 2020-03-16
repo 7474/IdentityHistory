@@ -22,15 +22,15 @@ namespace IdentityHistoryFunctionApp
         [FunctionName("ListTeams")]
         public static async Task<ActionResult<IList<ListTeam>>> ListTeams(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "teams")] HttpRequest req,
-            [CosmosDB(
+             [CosmosDB(
                 databaseName: "IdentityHistory",
                 collectionName: "SlackUsers",
-                ConnectionStringSetting = "CosmosDBConnection",
-                SqlQuery = "SELECT DISTINCT c.TeamId FROM c ORDER BY c.TeamId")]
-                IEnumerable<ListTeam> teams,
+                ConnectionStringSetting = "CosmosDBConnection")] IDocumentClient client,
             ILogger log)
         {
             // XXX TeamId はパーティションキーのはずなんだが。
+            // これかな？
+            // https://github.com/Azure/azure-cosmos-dotnet-v2/issues/720
             /*
              * [2020/03/15 16:30:29] System.Private.CoreLib: Exception while executing function: ListTeams. 
              * Microsoft.Azure.WebJobs.Host: Exception binding parameter 'teams'. 
@@ -42,7 +42,17 @@ namespace IdentityHistoryFunctionApp
             */
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            var responseList = teams.ToList();
+            // XXX いい感じにパーティション問い合わせができない。。。
+            Uri collectionUri = UriFactory.CreateDocumentCollectionUri("IdentityHistory", "SlackUsers");
+            IDocumentQuery<ListTeam> query = client.CreateDocumentQuery<ListTeam>(collectionUri)
+                .AsDocumentQuery();
+
+            // XXX 1件しかワークスペースサポートしていないので1件だけ取っておく。。。ありえん。
+            IList<ListTeam> responseList = new List<ListTeam>();
+            if (query.HasMoreResults)
+            {
+                responseList.Add((await query.ExecuteNextAsync<ListTeam>()).First());
+            }
 
             return new OkObjectResult(responseList);
         }

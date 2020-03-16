@@ -1,13 +1,7 @@
-﻿@page "/"
+﻿@page "/teams"
 @inject IHAPI IHAPI
 
-<h1>Identity History</h1>
-
-<div class="alert alert-info">
-    You don't know who is who if the icons change? This application stalking Slack icon changes.
-</div>
-
-<h2>Teams</h2>
+<h1>Teams</h1>
 
 @if (teams == null)
 {
@@ -35,7 +29,6 @@ else
         </tbody>
     </table>
 }
-
 @code {
     private IList<ListTeam> teams;
 
