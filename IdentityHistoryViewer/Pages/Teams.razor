@@ -1,4 +1,5 @@
 ﻿@page "/teams"
+@attribute [Authorize]
 @inject IHAPI IHAPI
 
 <h1>Teams</h1>
@@ -30,10 +31,14 @@ else
     </table>
 }
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
     private IList<ListTeam> teams;
 
     protected override async Task OnInitializedAsync()
     {
+        await authenticationStateTask;
         teams = await IHAPI.ListTeams();
     }
 }

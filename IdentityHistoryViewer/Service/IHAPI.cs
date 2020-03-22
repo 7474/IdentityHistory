@@ -1,4 +1,5 @@
-﻿using IdentityHistoryFunctionApp.Entity;
+﻿using BlazorWebAsmEasyAuth;
+using IdentityHistoryFunctionApp.Entity;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -17,16 +18,26 @@ namespace IdentityHistoryViewer.Service
     {
         private IHAPIConfig config;
         private HttpClient httpClient;
+        private EasyAuthAuthenticationStateProvider easyAuthAuthenticationStateProvider;
+        private async Task<HttpClient> ApiClient()
+        {
+            HttpClient authedClient = await easyAuthAuthenticationStateProvider.GetZumoAuthedClientAsync();
+            return authedClient ?? httpClient;
+        }
 
-        public IHAPI(HttpClient http, IHAPIConfig config)
+        public IHAPI(
+            HttpClient http, 
+            IHAPIConfig config, 
+            EasyAuthAuthenticationStateProvider easyAuthAuthenticationStateProvider)
         {
             this.httpClient = http;
             this.config = config;
+            this.easyAuthAuthenticationStateProvider = easyAuthAuthenticationStateProvider;
         }
 
         public async Task<IList<ListTeam>> ListTeams()
         {
-            var res = await httpClient.GetJsonAsync<IList<ListTeam>>(
+            var res = await (await ApiClient()).GetJsonAsync<IList<ListTeam>>(
                 $"{config.BaseUri}api/teams"
                 );
             return res;
@@ -34,7 +45,7 @@ namespace IdentityHistoryViewer.Service
 
         public async Task<IList<ListUser>> ListUser(string teamId)
         {
-            var res = await httpClient.GetJsonAsync<IList<ListUser>>(
+            var res = await (await ApiClient()).GetJsonAsync<IList<ListUser>>(
                 $"{config.BaseUri}api/teams/{teamId}/users"
                 );
             return res;
@@ -42,7 +53,7 @@ namespace IdentityHistoryViewer.Service
 
         public async Task<SlackUserEntity> GetUser(string teamId, string userId)
         {
-            var res = await httpClient.GetJsonAsync<SlackUserEntity>(
+            var res = await (await ApiClient()).GetJsonAsync<SlackUserEntity>(
                 $"{config.BaseUri}api/teams/{teamId}/users/{userId}"
                 );
             return res;

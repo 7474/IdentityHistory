@@ -1,4 +1,5 @@
 ﻿@page "/teams/{teamId}/users/{userId}"
+@attribute [Authorize]
 @inject IHAPI IHAPI
 @using IdentityHistoryFunctionApp.Entity
 @using System.Text.Json
@@ -39,11 +40,14 @@ else
     public string TeamId { get; set; }
     [Parameter]
     public string UserId { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
 
     private SlackUserEntity user;
 
     protected override async Task OnInitializedAsync()
     {
+        await authenticationStateTask;
         user = await IHAPI.GetUser(TeamId, UserId);
     }
 }

@@ -13,7 +13,7 @@ namespace IdentityHistoryViewer
     public class Program
     {
 #if DEBUG
-        const string SITE_BASE_URI = "https://localhost:5001";
+        const string SITE_BASE_URI = "https://localhost:5001/";
         const string API_BASE_URI = "http://localhost:7071/";
 #else
         const string SITE_BASE_URI = "https://identityhistory.z11.web.core.windows.net/";
@@ -24,18 +24,11 @@ namespace IdentityHistoryViewer
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
 
-            builder.Services.AddSingleton(new EasyAuthConfig()
+            builder.Services.AddEasyAuth(new EasyAuthConfig()
             {
                 BlazorWebsiteURL = SITE_BASE_URI,
                 AzureFunctionAuthURL = API_BASE_URI,
             });
-            builder.Services.AddScoped<EasyAuthNavigationHelper>();
-            builder.Services.AddScoped<EasyAuthAuthenticationStateProvider>();
-            builder.Services.AddScoped<AuthenticationStateProvider, EasyAuthAuthenticationStateProvider>();
-            // https://github.com/dotnet/aspnetcore/issues/18733
-            // Call AddAuthorizationCore after register AuthenticationStateProvider.
-            builder.Services.AddOptions();
-            builder.Services.AddAuthorizationCore();
 
             builder.Services.AddSingleton(new IHAPIConfig()
             {

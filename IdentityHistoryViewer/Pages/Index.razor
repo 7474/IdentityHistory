@@ -9,21 +9,29 @@
 
 <h2>Teams</h2>
 
-@if (teams == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var team in teams)
-            {
+<AuthorizeView>
+    <Authorizing>
+        <p><em>Authenticating...</em></p>
+    </Authorizing>
+    <NotAuthorized>
+        <p><em>Please Login.</em></p>
+    </NotAuthorized>
+    <Authorized>
+        @if (teams == null)
+        {
+        <p><em>Loading...</em></p>
+        }
+        else
+        {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var team in teams)
+                    {
                 <tr>
                     <td>
                         <NavLink class="nav-link" href="@($"/teams/{team.TeamId}/users")">
@@ -31,16 +39,22 @@ else
                         </NavLink>
                     </td>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+                    }
+            </tbody>
+        </table>
+        }
+    </Authorized>
+</AuthorizeView>
 
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
     private IList<ListTeam> teams;
 
     protected override async Task OnInitializedAsync()
     {
+        await authenticationStateTask;
         teams = await IHAPI.ListTeams();
     }
 }

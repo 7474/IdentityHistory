@@ -1,4 +1,5 @@
 ﻿@page "/teams/{teamId}/users"
+@attribute [Authorize]
 @inject IHAPI IHAPI
 
 <h1>Users</h1>
@@ -32,11 +33,14 @@ else
 @code {
     [Parameter]
     public string TeamId { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
 
     private IList<ListUser> users;
 
     protected override async Task OnInitializedAsync()
     {
+        await authenticationStateTask;
         users = await IHAPI.ListUser(TeamId);
     }
 }
